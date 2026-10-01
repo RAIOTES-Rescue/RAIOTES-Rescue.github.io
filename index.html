@@ -1,1 +1,185 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RAIOTES-RESCUE · Tecnología para explorar zonas de riesgo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#0b1220;--surface:#121c2e;--text:#eaf0f7;--muted:#93a3b8;--line:#26364f;--heat:#ff7a3d;--cool:#4fc3f7;--on-heat:#1a0b02}
+:root:not([data-theme="light"]){}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f3f6fa;--surface:#fff;--text:#0f1b2d;--muted:#52627a;--line:#d5dee9;--heat:#d9501a;--cool:#0a78b5;--on-heat:#fff}}
+:root[data-theme="light"]{--bg:#f3f6fa;--surface:#fff;--text:#0f1b2d;--muted:#52627a;--line:#d5dee9;--heat:#d9501a;--cool:#0a78b5;--on-heat:#fff}
+:root[data-theme="dark"]{--bg:#0b1220;--surface:#121c2e;--text:#eaf0f7;--muted:#93a3b8;--line:#26364f;--heat:#ff7a3d;--cool:#4fc3f7;--on-heat:#1a0b02}
+*,*:before,*:after{box-sizing:inherit}
+html{scroll-behavior:smooth;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 70px)}
+body{margin:0;background:var(--bg);color:var(--text);font:400 1.05rem/1.6 Barlow,system-ui,-apple-system,"Segoe UI",sans-serif}
+h1,h2,h3{font-family:"Barlow Condensed","Arial Narrow",Impact,sans-serif;line-height:1;margin:0;letter-spacing:.01em}
+.w{width:min(1080px,92%);margin:auto}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--cool);outline-offset:3px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav{height:62px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font:700 1.4rem "Barlow Condensed",sans-serif;text-decoration:none}.brand b{color:var(--heat)}
+nav{display:flex;gap:18px;align-items:center}nav a{color:var(--muted);text-decoration:none;font-size:.95rem}nav a:hover{color:var(--text)}
+.ib{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:8px;padding:6px 10px;cursor:pointer;font:inherit;font-size:.9rem}
+.hero{padding:56px 0 40px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+.hero h1{font-size:clamp(2.8rem,7vw,5.4rem);text-transform:none}
+.lead{color:var(--muted);font-size:1.15rem;max-width:34em;margin:18px 0 26px}
+.btns{display:flex;gap:10px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:8px;border:1px solid var(--line);background:var(--surface);text-decoration:none;font-weight:600;cursor:pointer;font-size:1rem;color:var(--text)}
+.btn.p{background:var(--heat);border-color:var(--heat);color:var(--on-heat)}
+.scan{position:relative;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface)}
+canvas{display:block;width:100%;height:340px;cursor:crosshair}
+.hud{position:absolute;left:12px;right:12px;bottom:10px;display:flex;justify-content:space-between;gap:8px;font-size:.85rem;pointer-events:none}
+.hud span{background:color-mix(in srgb,var(--bg) 80%,transparent);padding:3px 9px;border-radius:6px;border:1px solid var(--line)}
+#st.on{color:var(--heat);border-color:var(--heat)}
+section{padding:64px 0;border-top:1px solid var(--line)}
+h2{font-size:clamp(2rem,4.5vw,3rem);margin-bottom:12px}
+.intro{color:var(--muted);max-width:42em;margin:0 0 28px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.tab{padding:9px 15px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;font:600 .95rem Barlow,sans-serif}
+.tab[aria-selected=true]{background:var(--cool);border-color:var(--cool);color:#04121c}
+.panel{border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:26px;min-height:140px}
+.panel h3{font-size:1.8rem;margin-bottom:8px}.panel p{margin:0;color:var(--muted);max-width:46em}
+.flow{display:flex;gap:6px;align-items:stretch;flex-wrap:wrap}
+.step{flex:1 1 130px;border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:10px;padding:14px 10px;text-align:center;cursor:pointer;font:600 1rem Barlow,sans-serif}
+.step[aria-pressed=true]{border-color:var(--heat);box-shadow:inset 0 -3px 0 var(--heat)}
+.ar{align-self:center;color:var(--muted)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.card{border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:22px}
+.card h3{font-size:1.6rem;margin-bottom:6px}.card p{margin:0;color:var(--muted)}
+.big{font:700 clamp(3rem,8vw,5rem)/1 "Barlow Condensed",sans-serif;color:var(--heat)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:.9rem;color:var(--muted)}
+.road{list-style:none;margin:0;padding:0;border-left:2px solid var(--line)}
+.road li{padding:0 0 18px 20px;position:relative}.road li:before{content:"";position:absolute;left:-7px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--line)}
+.road li.on:before{background:var(--heat)}.road b{display:block}.road span{color:var(--muted)}
+.cta{border:1px solid var(--line);border-radius:16px;padding:34px;background:linear-gradient(120deg,color-mix(in srgb,var(--heat) 14%,var(--surface)),var(--surface))}
+footer{border-top:1px solid var(--line);padding:30px 0 40px;color:var(--muted);font-size:.9rem;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+@media(max-width:820px){.hero,.two{grid-template-columns:1fr}nav a.l{display:none}.ar{display:none}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header><div class="w nav"><a class="brand" href="#top">RAIOTES<b>-RESCUE</b></a><nav><a class="l" href="#sistema">Sistema</a><a class="l" href="#arquitectura">Arquitectura</a><a class="l" href="#plataformas">Plataformas</a><a class="l" href="#estado">Estado</a><a class="l" href="#contacto">Contacto</a><button class="ib" id="th" aria-label="Cambiar tema">Tema</button></nav></div></header>
+<main id="top">
+<div class="w hero">
+<div>
+<h1>Tecnología para explorar donde las personas no deberían entrar primero.</h1>
+<p class="lead">Sistema robótico autónomo para búsqueda, inspección y apoyo en escenarios de riesgo, desarrollado por estudiantes de Ingeniería Mecatrónica del Instituto Tecnológico Superior de Xalapa (ITSX).</p>
+<div class="btns"><a class="btn p" href="#sistema">Explorar el sistema</a><a class="btn" href="#contacto">Seguir el proyecto</a></div>
+</div>
+<div>
+<div class="scan"><canvas id="cv" aria-label="Simulación de escaneo LiDAR y térmico. Mueve el cursor para buscar la fuente de calor."></canvas><div class="hud"><span id="st">Escaneando…</span><span>Clic: reubicar fuente de calor</span></div></div>
+</div>
+</div>
 
+<section id="sistema"><div class="w">
+<h2>¿Cómo funciona?</h2>
+<p class="intro">Una NVIDIA Jetson Orin Nano es la unidad principal de procesamiento. Ahí se combinan cinco capacidades. Elige una para ver qué hace.</p>
+<div class="tabs" role="tablist" id="tabs"></div>
+<div class="panel" id="panel" role="tabpanel" aria-live="polite"></div>
+</div></section>
+
+<section id="arquitectura"><div class="w">
+<h2>Arquitectura del sistema</h2>
+<p class="intro">Los datos viajan de los sensores a la plataforma robótica. Toca cada etapa para ver su función.</p>
+<div class="flow" id="flow"></div>
+<div class="panel" id="fp" style="margin-top:16px" aria-live="polite"></div>
+</div></section>
+
+<section id="plataformas"><div class="w">
+<h2>Plataforma adaptable</h2>
+<p class="intro">El sistema de percepción y procesamiento no está limitado a un único robot. Puede integrarse en distintas plataformas móviles según la misión.</p>
+<div class="tabs" id="mis"></div>
+<div class="panel" id="mp" aria-live="polite"></div>
+<div class="two" style="margin-top:18px">
+<div class="card"><div class="big">30 × 30 cm</div><h3>Diseño para entornos difíciles</h3><p>Plataforma compacta, pensada para terrenos irregulares y espacios de difícil acceso, con capacidad para superar obstáculos y transportar sus sistemas de percepción y procesamiento.</p></div>
+<div class="card"><h3>Objetivo</h3><p>Reducir la exposición de los equipos de emergencia a zonas potencialmente peligrosas, entregando información del entorno antes o durante una intervención.</p><div class="chips"><span class="chip">Mecatrónica</span><span class="chip">Robótica móvil</span><span class="chip">Inteligencia Artificial</span><span class="chip">Visión artificial</span><span class="chip">Electrónica</span><span class="chip">IoT</span><span class="chip">Programación</span></div></div>
+</div>
+</div></section>
+
+<section id="estado"><div class="w two">
+<div><h2>Proyecto en desarrollo</h2><p class="intro">El sistema continúa en desarrollo y validación. Las mejoras futuras buscan aumentar su autonomía, percepción, navegación y capacidad de adaptación.</p></div>
+<ul class="road"><li class="on"><b>Percepción y procesamiento</b><span>LiDAR, cámara térmica y visión artificial integrados en la Jetson.</span></li><li class="on"><b>Comunicación con el robot</b><span>Envío de información y órdenes entre procesamiento y plataforma.</span></li><li><b>Validación en escenarios</b><span>Pruebas en terrenos irregulares y espacios de acceso limitado.</span></li><li><b>Mayor autonomía y navegación</b><span>Adaptación a nuevas plataformas y misiones.</span></li></ul>
+</div></section>
+
+<section id="contacto"><div class="w"><div class="cta">
+<h2>Sigue el desarrollo de RAIOTES-RESCUE</h2>
+<p class="lead">Avances, pruebas y novedades del proyecto en nuestras redes.</p>
+<div class="btns">
+<a class="btn p" href="https://www.instagram.com/rescue.robot15?stkn=anBlOHRicTh2bzl2" target="_blank" rel="noopener">Instagram @rescue.robot15</a>
+<a class="btn" href="https://www.facebook.com/share/1Ctwnn2sPZ/" target="_blank" rel="noopener">Facebook</a>
+</div></div></div></section>
+</main>
+<footer class="w"><div><strong>RAIOTES-RESCUE</strong><br>Ingeniería Mecatrónica · Instituto Tecnológico Superior de Xalapa (ITSX)</div><div>InnovaTecNM 2026 · Industria Eléctrica y Electrónica</div></footer>
+
+<script>
+const $=s=>document.querySelector(s);
+const comp=[
+["LiDAR","Genera información de distancia y del entorno: mide a qué distancia están paredes, escombros y obstáculos para construir una representación del espacio."],
+["Cámara térmica","Detecta fuentes de calor y diferencias de temperatura, útil para localizar personas o zonas calientes donde la vista no alcanza."],
+["Visión artificial","Analiza imágenes y permite identificar elementos del entorno mediante modelos de detección."],
+["Procesamiento con IA","Transforma los datos de los sensores en información útil para quien opera o supervisa el robot."],
+["Comunicación","Permite enviar información y órdenes entre el sistema de procesamiento y el robot."]];
+const arch=[
+["Sensores","LiDAR, cámara térmica y cámara convencional capturan distancia, imagen y temperatura del entorno."],
+["Jetson Orin Nano","Unidad principal de procesamiento: concentra la percepción, la visión artificial y la lógica de operación."],
+["IA y procesamiento","Los algoritmos interpretan los datos y los convierten en información comprensible."],
+["Toma de información","El equipo obtiene una imagen clara del entorno para decidir sin exponerse."],
+["Comunicación","La información y las órdenes viajan entre el procesamiento y el robot."],
+["Plataforma robótica","El robot ejecuta el desplazamiento. Puede cambiarse según la misión."]];
+const mis=[
+["Búsqueda y rescate","Exploración de zonas de difícil acceso y generación de información del entorno antes de que entre el personal."],
+["Inspección de estructuras","Observación remota de edificios e instalaciones donde la presencia humana implica riesgo."],
+["Incendios","Percepción térmica y visual para apoyar la evaluación de áreas de riesgo."],
+["Derrumbes","Navegación y percepción entre escombros, obstáculos y accesos limitados."],
+["Otras contingencias","Arquitectura preparada para adaptar sensores, locomoción y módulos de operación a nuevos escenarios."]];
+function tabs(box,panel,data,fmt){
+  data.forEach((d,i)=>{const b=document.createElement('button');b.className='tab';b.role='tab';b.textContent=d[0];
+    b.onclick=()=>{[...box.children].forEach(c=>c.setAttribute('aria-selected',c===b));panel.innerHTML=fmt(d)};box.appendChild(b)});
+  box.children[0].click();
+}
+tabs($('#tabs'),$('#panel'),comp,d=>`<h3>${d[0]}</h3><p>${d[1]}</p>`);
+tabs($('#mis'),$('#mp'),mis,d=>`<h3>${d[0]}</h3><p>${d[1]}</p>`);
+(function(){
+  const f=$('#flow');
+  arch.forEach((d,i)=>{
+    if(i){const a=document.createElement('span');a.className='ar';a.textContent='→';f.appendChild(a)}
+    const b=document.createElement('button');b.className='step';b.textContent=d[0];
+    b.onclick=()=>{[...f.querySelectorAll('.step')].forEach(c=>c.setAttribute('aria-pressed',c===b));$('#fp').innerHTML=`<h3>${d[0]}</h3><p>${d[1]}</p>`};
+    f.appendChild(b);
+  });
+  f.querySelector('.step').click();
+})();
+$('#th').onclick=()=>{const r=document.documentElement,dark=r.dataset.theme?r.dataset.theme==='dark':!matchMedia('(prefers-color-scheme:light)').matches;r.dataset.theme=dark?'light':'dark'};
+/* Escáner LiDAR + térmico */
+(function(){
+  const c=$('#cv'),x=c.getContext('2d'),st=$('#st'),rm=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  let W,H,mx=.3,my=.5,t=0,idle=!rm,hx=.7,hy=.55;
+  const obs=[[.1,.15,.2,.3],[.45,.6,.25,.28],[.78,.12,.15,.22],[.05,.7,.18,.2]];
+  const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  function size(){const d=devicePixelRatio||1;W=c.clientWidth;H=c.clientHeight;c.width=W*d;c.height=H*d;x.setTransform(d,0,0,d,0,0);draw()}
+  function draw(){
+    x.clearRect(0,0,W,H);const R=Math.min(W,H)*.42,px=mx*W,py=my*H,cool=css('--cool'),heat=css('--heat');
+    x.fillStyle=cool;
+    for(let i=12;i<W;i+=18)for(let j=12;j<H;j+=18){const d=Math.hypot(i-px,j-py);if(d<R){x.globalAlpha=(1-d/R)*.8;x.fillRect(i,j,2,2)}}
+    x.strokeStyle=cool;x.lineWidth=2;
+    obs.forEach(o=>{const cx=(o[0]+o[2]/2)*W,cy=(o[1]+o[3]/2)*H,d=Math.hypot(cx-px,cy-py);if(d<R*1.2){x.globalAlpha=Math.max(.15,1-d/(R*1.2));x.strokeRect(o[0]*W,o[1]*H,o[2]*W,o[3]*H)}});
+    const dh=Math.hypot(hx*W-px,hy*H-py),k=Math.max(0,1-dh/R);
+    if(k>0){const g=x.createRadialGradient(hx*W,hy*H,0,hx*W,hy*H,70);g.addColorStop(0,'#fff6d6');g.addColorStop(.3,heat);g.addColorStop(1,'transparent');x.globalAlpha=Math.min(1,k*1.6);x.fillStyle=g;x.beginPath();x.arc(hx*W,hy*H,70,0,7);x.fill()}
+    x.globalAlpha=.9;x.strokeStyle=cool;x.lineWidth=1;x.beginPath();x.arc(px,py,R,0,7);x.stroke();x.globalAlpha=1;
+    const on=dh<R*.55;st.textContent=on?'Fuente de calor detectada':'Escaneando…';st.classList.toggle('on',on);
+  }
+  function loop(){if(idle){t+=.012;mx=.5+.38*Math.sin(t);my=.5+.3*Math.sin(t*1.7+1);draw()}requestAnimationFrame(loop)}
+  c.addEventListener('pointermove',e=>{idle=false;const r=c.getBoundingClientRect();mx=(e.clientX-r.left)/r.width;my=(e.clientY-r.top)/r.height;draw()});
+  c.addEventListener('pointerleave',()=>{idle=!rm});
+  c.addEventListener('click',()=>{hx=.1+Math.random()*.8;hy=.15+Math.random()*.7;draw()});
+  addEventListener('resize',size);new MutationObserver(draw).observe(document.documentElement,{attributes:true});
+  size();if(!rm)loop();
+})();
+</script>
+</body>
+</html>
